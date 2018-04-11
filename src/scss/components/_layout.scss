@@ -1,0 +1,70 @@
+html,
+body {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: $background;
+    color: $foreground;
+}
+
+.page {
+    width: 100vw;
+    height: 100vh;
+    &.locked {
+        .scroll-content {
+            transform: none !important;
+            height: 100%;
+            overflow: hidden;
+        }
+    }
+}
+
+.container,
+.flex-row {
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 0 80px;
+    @include media-breakpoint-down(sm) {
+        padding: 0 15px;
+    }
+}
+
+.flex-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .flex {
+        flex: 1 1 33%;
+        &.flex-left {
+            text-align: left;
+        }
+        &.flex-center {
+            flex: 1 1 50%;
+            text-align: center;
+        }
+        &.flex-right {
+            text-align: right;
+        }
+    }
+}
+
+.content {
+    display: block;
+    height: 3200vh;
+}
+
+.mr-10 {
+    margin-right: 10px;
+}
+
+[unselectable] {
+    @include unselectable();
+}
+
+/*
+img,
+svg {
+	max-width: 100%;
+}
+*/

@@ -1,0 +1,18 @@
+@import "mixins/breakpoints";
+@mixin stagger($property) {
+    @for $i from 1 through 20 {
+        #{$property}:nth-of-type(#{$i}) {
+            -webkit-animation-delay: $i * 50ms;
+            -moz-animation-delay: $i * 50ms;
+            animation-delay: $i * 50ms;
+        }
+    }
+}
+
+@mixin unselectable () {
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+}

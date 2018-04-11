@@ -1,0 +1,23 @@
+.hidden-sm-down {
+    @include media-breakpoint-down(sm) {
+        display: none;
+    }
+}
+
+.hidden-md-down {
+    @include media-breakpoint-down(md) {
+        display: none;
+    }
+}
+
+.hidden-md-up {
+    @include media-breakpoint-up(md) {
+        display: none;
+    }
+}
+
+.hidden-lg-up {
+    @include media-breakpoint-up(lg) {
+        display: none;
+    }
+}

@@ -1,0 +1,27 @@
+footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    width: 100vw;
+    min-height: 80px;
+    color: #aaabb1;
+    border-top: 1px solid #aaabb1;
+    @include media-breakpoint-down(md) {
+        .flex-row {
+            flex-direction: column;
+            .flex {
+                margin: 10px auto;
+            }
+        }
+    }
+}
+
+.nav-footer {
+    text-transform: none;
+    font-weight: 300;
+    @include media-breakpoint-down(md) {
+        padding: 10px 0;
+    }
+}

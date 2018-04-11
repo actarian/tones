@@ -1,0 +1,319 @@
+@import "variables";
+a,
+button,
+.btn {
+    position: relative;
+    display: inline-block;
+    color: inherit;
+    text-decoration: none;
+    -webkit-appearance: none;
+    outline: 0;
+    transition: all 350ms ease-in-out;
+    cursor: pointer;
+    i {
+        vertical-align: middle;
+        font-size: 1.2em;
+        line-height: 1.2em;
+        &>span {
+            display: none;
+        }
+    }
+}
+
+.btn-share+.btn-share {
+    margin-left: 5px;
+}
+
+.btn-toggle {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    &:before,
+    &:after {
+        content: '';
+        display: block;
+        position: absolute;
+        width: 20px;
+        height: 2px;
+        top: 50%;
+        left: 50%;
+        background: $white;
+        transition: all ease-in-out 250ms;
+    }
+    &:before {
+        transform: translateX(-10px) translateY(-6px);
+    }
+    &:after {
+        transform: translateX(-10px) translateY(6px);
+    }
+    &.active {
+        &:before {
+            transform: translateX(-10px) translateY(0) rotate(-45deg);
+        }
+        &:after {
+            transform: translateX(-10px) translateY(0) rotate(45deg);
+        }
+    }
+}
+
+.btn-menu {
+    display: block;
+    text-transform: none;
+    padding: 20px 0;
+    line-height: 20px;
+    margin: 0 15px;
+    overflow: hidden;
+    &:before {
+        content: '';
+        display: block;
+        position: absolute;
+        height: 5px;
+        width: 100%;
+        bottom: -5px;
+        background: $red;
+        transform: translateY(0);
+        transition: all ease-in-out 350ms;
+    }
+    &:hover,
+    &.active {
+        &:before {
+            transform: translateY(-5px);
+        }
+    }
+    @include media-breakpoint-down(sm) {
+        margin: 0 15px;
+        font-size: 14px;
+        border-bottom: 1px solid #e6e6e6;
+        &:before {
+            display: none;
+        }
+    }
+}
+
+.btn-overview {
+    font-size: 40px;
+    display: block;
+    z-index: 98;
+    text-transform: uppercase;
+    &>span {
+        display: inline-block;
+        transition: transform ease-in-out 250ms;
+    }
+    &:before {
+        content: '';
+        display: block;
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        border: 2px solid $red;
+        border-radius: 50%;
+        top: 50%;
+        margin-top: -15px;
+    }
+    .flex-left & {
+        &:before {
+            right: -15px;
+        }
+        &:hover {
+            &>span {
+                transform: translateX(-10px);
+            }
+        }
+    }
+    .flex-right & {
+        &:before {
+            left: -15px;
+        }
+        &:hover {
+            &>span {
+                transform: translateX(10px);
+            }
+        }
+    }
+    @include media-breakpoint-down(sm) {
+        &:before {
+            width: 6px;
+            height: 6px;
+            margin-top: -5px;
+        }
+        .flex-left & {
+            &:before {
+                right: -5px;
+            }
+        }
+        .flex-right & {
+            &:before {
+                left: -5px;
+            }
+        }
+    }
+    .loading & {
+        display: none;
+    }
+}
+
+.btn-more {
+    border-radius: 4px;
+    text-transform: uppercase;
+    margin: 15px 15px;
+    padding: 5px 13px;
+    letter-spacing: 1px;
+    font-size: 12px;
+    line-height: 20px;
+    border-radius: 3px;
+    background: $red;
+    color: $white;
+    &:hover,
+    &.active {
+        background: $white;
+        color: $red;
+    }
+}
+
+.btn-marker {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    color: $black;
+    white-space: nowrap;
+    min-width: 30px;
+    min-height: 60px;
+    .title,
+    .num {
+        display: block;
+        top: 0;
+        right: 0;
+        transition: all ease-in-out 350ms;
+    }
+    .num {
+        position: absolute;
+        transform: translateX(0);
+    }
+    .title {
+        transform: translateX(110%);
+    }
+    &:hover {
+        .title {
+            transform: translateX(0);
+        }
+        .num {
+            transform: translateX(110%);
+        }
+    }
+    &:hover,
+    &.active {
+        color: $red;
+    }
+    @include media-breakpoint-down(sm) {
+        .title {
+            display: none;
+        }
+        .nom {
+            font-weight: 600;
+            transform: none !important;
+        }
+        &:hover,
+        &.active {
+            .title {
+                display: none;
+            }
+            .num {
+                transform: none !important;
+            }
+        }
+    }
+}
+
+.btn-spec {
+    text-transform: uppercase;
+    line-height: 20px;
+    margin: 0 15px;
+    padding: 15px 15px;
+    border-radius: 5px;
+    letter-spacing: 3px;
+    background: #28292b;
+    &:hover,
+    &.active {
+        background: #3b3c3f;
+    }
+    &:hover {
+        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.25);
+    }
+    .model {
+        color: $red;
+        white-space: nowrap;
+    }
+}
+
+.btn-download {
+    text-transform: uppercase;
+    line-height: 20px;
+    margin: 0 15px;
+    padding: 15px 45px;
+    border-radius: 3px;
+    border: 2px solid $white;
+    letter-spacing: 3px;
+    background: transparent;
+    color: $white;
+    &:hover,
+    &.active {
+        background: $white;
+        color: $black;
+    }
+}
+
+.btn-submit {
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 20px;
+    margin: 0 15px;
+    padding: 15px 45px;
+    border-radius: 3px;
+    border: 2px solid $red;
+    letter-spacing: 3px;
+    background: transparent;
+    color: $red;
+    &:hover,
+    &.active {
+        background: $red;
+        color: $white;
+    }
+}
+
+.btn-link {
+    position: relative;
+    &:before {
+        content: '';
+        display: block;
+        position: absolute;
+        height: 2px;
+        width: 100%;
+        bottom: -2px;
+        background: #aaabb1;
+        transform: scale(1, 1);
+        transition: all ease-in-out 250ms;
+    }
+    &:hover,
+    &.active {
+        &:before {
+            transform: scale(0, 1);
+        }
+    }
+}
+
+[data-reveal] {
+    position: relative;
+    cursor: pointer;
+    .info {
+        opacity: 0;
+        transition: all 350ms ease-in-out;
+    }
+    &:hover {
+        .info {
+            opacity: 1;
+        }
+    }
+}

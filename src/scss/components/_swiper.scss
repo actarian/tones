@@ -1,0 +1,90 @@
+.container-swiper {
+    position: relative;
+}
+
+// ARROWS
+.swiper-button-next,
+.swiper-button-prev {
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    margin-top: -20px;
+    z-index: 10;
+    cursor: pointer;
+    background: none;
+    outline: none !important;
+    &.swiper-button-disabled {
+        opacity: .35;
+        cursor: auto;
+        pointer-events: none;
+    }
+    &:before {
+        display: block;
+        position: absolute;
+        font-family: 'campagnolo12speed';
+        font-size: 40px;
+        line-height: 0;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    @include media-breakpoint-up(lg) {
+        display: none;
+    }
+}
+
+.swiper-button-prev,
+.swiper-container-rtl .swiper-button-next {
+    background-image: none;
+    left: -40px;
+    right: auto;
+    &:before {
+        content: "\62";
+    }
+    @include media-breakpoint-down(sm) {
+        left: -10px;
+    }
+}
+
+.swiper-button-next,
+.swiper-container-rtl .swiper-button-prev {
+    background-image: none;
+    right: -40px;
+    left: auto;
+    &:before {
+        content: "\63";
+    }
+    @include media-breakpoint-down(sm) {
+        right: -10px;
+    }
+}
+
+// BULLETS
+.swiper-pagination-bullets {
+    position: absolute;
+    width: 100%;
+    margin: 40px 0 0 0;
+    @include media-breakpoint-up(lg) {
+        display: none;
+    }
+}
+
+.swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    border-radius: 100%;
+    background: $background;
+    opacity: 1;
+    border: 2px solid $black;
+}
+
+.swiper-pagination-bullet-active {
+    opacity: 1;
+    background: transparent;
+    border: 2px solid $red;
+}
+
+.swiper-pagination-bullet+.swiper-pagination-bullet {
+    margin-left: 20px;
+}

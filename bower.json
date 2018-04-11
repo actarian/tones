@@ -1,0 +1,26 @@
+{
+  "name": "tones",
+  "description": "Tones",
+  "main": "./bower_components",
+  "authors": [
+    "actarian <lzampetti@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "glsl"
+  ],
+  "homepage": "https://github.com/actarian/tones",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "greensock": "https://github.com/greensock/GreenSock-JS.git#1.20.4",
+    "three.js": "https://github.com/mrdoob/three.js.git#r91",
+    "tone": "r12"
+  }
+}

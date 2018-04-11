@@ -1,0 +1,18 @@
+.preload {
+    display: block;
+    position: absolute;
+    top: 0;
+    width: 100vw;
+    height: 6px;
+    background: rgba($red, 0.1);
+    transform: translateY(-6px);
+    transition: all ease-in-out 350ms;
+    .percent {
+        width: 0;
+        height: 6px;
+        background: $red;
+    }
+    .loading & {
+        transform: translateY(0);
+    }
+}

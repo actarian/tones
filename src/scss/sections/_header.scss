@@ -1,0 +1,117 @@
+header {
+    position: fixed;
+    width: 100vw;
+    top: 0;
+    z-index: 100;
+}
+
+.campagnolo {
+    line-height: 0;
+    vertical-align: middle;
+    &>img,
+    &>svg {
+        width: 202px;
+        height: 44px;
+    }
+    @include media-breakpoint-down(sm) {
+        &>img,
+        &>svg {
+            width: 130px;
+            height: 30px;
+        }
+    }
+}
+
+.tab-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    li+li {
+        margin-left: 10px;
+    }
+}
+
+.nav-main {
+    padding-top: 60px;
+    transform: translateY(0);
+    transition: all 350ms ease-in-out;
+    .submenu & {
+        pointer-events: none;
+        transform: translateY(-100%);
+    }
+    @include media-breakpoint-down(sm) {
+        padding-top: 15px;
+    }
+}
+
+.nav-sub {
+    position: fixed;
+    top: 0;
+    background: $black;
+    color: $white;
+    overflow: visible;
+    pointer-events: none; // box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.25);
+    border-bottom: 1px solid darken($black, 10%);
+    transform: translateY(-100%);
+    transition: all 350ms ease-in-out;
+    .campagnolo {
+        svg {
+            width: 165px;
+            height: 38px;
+            path {
+                fill: $white;
+            }
+        }
+    }
+    .submenu & {
+        pointer-events: all;
+        transform: translateY(0);
+    }
+    @include media-breakpoint-down(sm) {
+        .flex-row {
+            .flex-left,
+            .flex-right {
+                flex: 1 1 155px;
+            }
+            .flex-center {
+                flex: 1 1 40px;
+            }
+        }
+        .campagnolo {
+            &>img,
+            &>svg {
+                width: 140px;
+                height: 32px;
+            }
+        }
+        .btn-more {
+            margin: 13px 0;
+        }
+        .tab-menu {
+            display: block;
+            position: absolute;
+            top: 100%;
+            width: 100%;
+            left: 0;
+            background: white;
+            color: black;
+            overflow: hidden;
+            max-height: 0;
+            pointer-events: none;
+            transition: all ease-in-out 600ms;
+            li+li {
+                margin-left: 0;
+            }
+            li:nth-child(2) {
+                margin-bottom: 25px;
+            }
+        }
+        .submenu.submenu-active & {
+            .tab-menu {
+                max-height: 100vh;
+                pointer-events: all;
+            }
+        }
+    }
+}

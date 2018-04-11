@@ -1,0 +1,84 @@
+.markers {
+    z-index: 0;
+    position: absolute;
+    width: auto;
+    height: 100%;
+    right: 80px;
+    .track {
+        z-index: 3;
+    }
+    @include media-breakpoint-down(sm) {
+        height: 80vh;
+        right: 15px;
+        .track {
+            right: -5px;
+        }
+    }
+}
+
+.nav-markers {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    width: auto;
+    height: 100%;
+    right: 0;
+    top: 0;
+    list-style: none;
+    text-align: right;
+    text-transform: uppercase;
+    padding: 0;
+    margin: 0;
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity ease-in-out 350ms;
+    li {
+        line-height: 60px;
+        font-size: 16px;
+        letter-spacing: 3px;
+    }
+    .loaded & {
+        opacity: 1;
+        pointer-events: all;
+    }
+}
+
+.track {
+    position: absolute;
+    height: 480px;
+    width: 20px;
+    top: 50%;
+    margin-top: -240px;
+    right: -20px; // background: rgba(128, 128, 128, 0.2);
+    opacity: 0;
+    .loaded & {
+        opacity: 1;
+    }
+}
+
+.player-time {
+    position: absolute;
+    display: block;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    width: 2px;
+    height: 20px;
+    border-radius: 2px;
+    background-color: $red;
+}
+
+.marker-time {
+    position: absolute;
+    display: block;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    width: 2px;
+    height: 20px;
+    border-radius: 2px;
+    background-color: rgba($red, 0.1);
+}

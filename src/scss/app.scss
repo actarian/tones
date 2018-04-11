@@ -1,0 +1,37 @@
+@import "variables";
+@import "mixins";
+/*
+@import "components/layout";
+@import "components/animations";
+@import "components/buttons";
+@import "components/navs";
+@import "components/captions";
+@import "components/markers";
+@import "components/preload";
+@import "components/scrollbar";
+@import "components/swiper";
+@import "components/switch";
+@import "components/typography";
+@import "sections/header";
+@import "sections/footer";
+@import "sections/overview";
+@import "sections/specs";
+@import "sections/learn";
+@import "responsive";
+*/
+
+html,
+body {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+.section {
+    min-height: 100vh;
+}
+
+.section-scene {
+    background: white;
+    overflow: hidden;
+}

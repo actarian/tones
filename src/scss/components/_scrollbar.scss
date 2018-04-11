@@ -1,0 +1,21 @@
+/*
+.scrollbar-track {
+    background: rgba(222, 222, 222, .75);
+    &.show,
+    &:hover {}
+}
+*/
+
+.scrollbar-track-x {
+    height: 4px !important;
+}
+
+.scrollbar-track-y {
+    width: 4px !important;
+}
+
+.scrollbar-thumb {
+    width: 4px !important;
+    height: 4px !important;
+    border-radius: 2px !important;
+}

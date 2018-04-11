@@ -1,0 +1,169 @@
+@keyframes enterBottom {
+    0% {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@mixin enterBottom() {
+    animation: enterBottom ease-in-out 350ms;
+    animation-iteration-count: 1;
+    transform-origin: 50% 50%;
+    animation-fill-mode: both;
+}
+
+@keyframes exitingTop {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+}
+
+@mixin exitingTop() {
+    animation: exitingTop ease-in-out 350ms;
+    animation-iteration-count: 1;
+    transform-origin: 50% 50%;
+    animation-fill-mode: both;
+}
+
+@mixin revealRimIdle() {
+    shape-padding: 20px;
+    shape-inside: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+    clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+    -webkit-clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+}
+
+@keyframes revealRimIdle {
+    0% {
+        @include revealRimIdle();
+    }
+    50% {
+        shape-inside: polygon(50% 0, 100% 0, 100% 100%, 0 100%);
+        clip-path: polygon(50% 0, 100% 0, 100% 100%, 0 100%);
+        -webkit-clip-path: polygon(50% 0, 100% 0, 100% 100%, 0 100%);
+    }
+    100% {
+        shape-inside: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+    }
+}
+
+@keyframes revealRim {
+    0% {
+        shape-inside: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+        clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+        -webkit-clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+    }
+    50% {
+        shape-inside: polygon(100% 0, 100% 0, 100% 100%, 0 100%);
+        clip-path: polygon(100% 0, 100% 0, 100% 100%, 0 100%);
+        -webkit-clip-path: polygon(100% 0, 100% 0, 100% 100%, 0 100%);
+    }
+    100% {
+        shape-inside: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+    }
+}
+
+@mixin revealRimIdleAnimation() {
+    animation: revealRimIdle ease-in-out 600ms;
+    animation-iteration-count: 1;
+    transform-origin: 50% 50%;
+    animation-fill-mode: forwards;
+}
+
+@mixin revealRimAnimation() {
+    animation: revealRim ease-in-out 600ms;
+    animation-iteration-count: 1;
+    transform-origin: 50% 50%;
+    animation-fill-mode: forwards;
+}
+
+@mixin revealDiscIdle() {
+    shape-padding: 20px;
+    shape-inside: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+    clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+    -webkit-clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+}
+
+@keyframes revealDiscIdle {
+    0% {
+        @include revealDiscIdle();
+    }
+    50% {
+        shape-inside: polygon(0 0, 50% 0, 100% 100%, 0 100%);
+        clip-path: polygon(0 0, 50% 0, 100% 100%, 0 100%);
+        -webkit-clip-path: polygon(0 0, 50% 0, 100% 100%, 0 100%);
+    }
+    100% {
+        shape-inside: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+    }
+}
+
+@keyframes revealDisc {
+    0% {
+        shape-inside: polygon(0 0, 0 0, 0 100%, 0 100%);
+        clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+        -webkit-clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+    }
+    50% {
+        shape-inside: polygon(0 0, 0 0, 100% 100%, 0 100%);
+        clip-path: polygon(0 0, 0 0, 100% 100%, 0 100%);
+        -webkit-clip-path: polygon(0 0, 0 0, 100% 100%, 0 100%);
+    }
+    100% {
+        shape-inside: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+        -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+    }
+}
+
+@mixin revealDiscIdleAnimation() {
+    animation: revealDiscIdle ease-in-out 600ms;
+    animation-iteration-count: 1;
+    transform-origin: 50% 50%;
+    animation-fill-mode: forwards;
+}
+
+@mixin revealDiscAnimation() {
+    animation: revealDisc ease-in-out 600ms;
+    animation-iteration-count: 1;
+    transform-origin: 50% 50%;
+    animation-fill-mode: forwards;
+}
+
+@keyframes loadingLetter {
+    0% {
+        opacity: 0;
+        transform: translateX(200px);
+    }
+    30% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    70% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-200px);
+    }
+}
+
+@mixin loadingLetter() {
+    animation: loadingLetter ease-in-out 3s infinite forwards;
+    transform-origin: 50% 50%;
+}

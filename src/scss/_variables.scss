@@ -1,0 +1,23 @@
+//colors
+$white: #ffffff;
+$black: #28292b;
+$red: #c02a1b;
+$grey: #aaabb1;
+$greyLight: #e1e1e1;
+// vars
+$background: $greyLight;
+$foreground: $black;
+$errors: #252526;
+$error: $red;
+$warning: #cc6633;
+$line: #4ec9b0;
+$value: #569cd0;
+$text: #d4d4d4;
+$tools: #000000; // #333333;
+$record: #e54646;
+$create: #007acc;
+// Grid breakpoints
+//
+// Define the minimum dimensions at which your layout will change,
+// adapting to different screen sizes, for use in media queries.
+$grid-breakpoints: ( xs: 0, sm: 576px, md: 768px, lg: 992px, xl: 1200px) !default;
