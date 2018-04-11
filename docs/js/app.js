@@ -41,7 +41,7 @@
         geometry = new THREE.BoxGeometry(3, 3, 3);
         material = new THREE.MeshNormalMaterial();
         cube2 = new THREE.Mesh(geometry, material);
-        cube2.position.set(0, -8, 0);
+        cube2.position.set(0, -20, 0);
         scene.add(cube2);
         hittables.push(cube2);
 
