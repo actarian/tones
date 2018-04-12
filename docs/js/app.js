@@ -187,6 +187,23 @@
         disc.add(label);
         scene.add(disc);
 
+        // cover
+        geometry = new THREE.PlaneGeometry(90, 90, 32, 32);
+        material = new THREE.MeshStandardMaterial({
+            color: 0x3f3b38,
+            map: diffuseMap,
+            roughness: 0.6,
+            metalness: 0.1,
+            opacity: 1,
+            transparent: false,
+        });
+        cover = new THREE.Mesh(geometry, material);
+        cover.rotation.set(-Math.PI / 2, 0, 0);
+        cover.position.set(-25, 2, 0);
+        cover.receiveShadow = true;
+        cover.castShadow = true;
+        scene.add(cover);
+
         // renderer
         renderer = new THREE.WebGLRenderer({
             antialias: true,
@@ -388,6 +405,7 @@
         connector.rotation.y += speed33 * song.speed;
         disc.rotation.z += speed33 * song.speed;
         emitter.rotation.y += speed33 * song.speed;
+        cover.position.x = -25 - 90 * song.speed;
         light.position.x += (emitter.position.x * -1 - light.position.x) / 20;
         light.position.z += (emitter.position.z * -1 - light.position.z) / 20;
         // collisions();
