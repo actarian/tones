@@ -9,6 +9,13 @@
     }
 
     var USE_PCSS_SHADOWS = false;
+    var textureTypes = {
+        DIFFUSE: 0,
+        BUMP: 1,
+        LIGHT: 2,
+        ALPHA: 3,
+        METAL: 4,
+    };
 
     var volume = new Tone.Volume(-100);
 
@@ -23,7 +30,7 @@
     var camera, perspectivecamera, orthocamera, scene, renderer, orbit, drag;
     var light;
     var geometry, material, mesh;
-    var plane, connector, emitter;
+    var plane, connector, emitter, disc;
 
     // soft shadow maps         
     if (USE_PCSS_SHADOWS) {
@@ -50,7 +57,7 @@
 
         // light
         // light = new THREE.PointLight(0xfefefe, 2, 100, 2);
-        light = new THREE.SpotLight(0xfefefe, 1, 1000, 1, 1, 2);
+        light = new THREE.SpotLight(0xfefefe, 1, 1000, 1, 1, 0.1);
         // light = new THREE.DirectionalLight(0xdfebff, 1.75);
         light.position.set(50, 50, 50);
         light.castShadow = true;
@@ -83,7 +90,12 @@
         scene.add(plane);
 
         // connector
-        geometry = new THREE.BoxGeometry(10, 10, 10);
+        var envmap = new THREE.TextureLoader().load('img/envmap.jpg');
+        envmap.mapping = THREE.EquirectangularReflectionMapping;
+        envmap.magFilter = THREE.LinearFilter;
+        envmap.minFilter = THREE.LinearMipMapLinearFilter;
+        // geometry = new THREE.BoxGeometry(10, 10, 10);
+        geometry = new THREE.SphereGeometry(2, 64, 64);
         // material = new THREE.MeshNormalMaterial();
         material = new THREE.MeshStandardMaterial({
             color: 0x938e8c,
@@ -92,8 +104,15 @@
             opacity: 1.0,
             transparent: false,
         });
+        material = new THREE.MeshStandardMaterial({
+            color: 0x666666,
+            roughness: 0.2,
+            metalness: 0.95,
+            envMap: envmap,
+            envMapIntensity: 1,
+        });
         connector = new THREE.Mesh(geometry, material);
-        connector.position.set(0, 5, 0);
+        connector.position.set(0, 2, 0);
         connector.receiveShadow = false;
         connector.castShadow = true;
         scene.add(connector);
@@ -115,6 +134,48 @@
         emitter.castShadow = true;
         scene.add(emitter);
         hittables.push(emitter);
+
+        // disc
+        var bumpMap = getDiscTextures(textureTypes.BUMP);
+        var roughnessMap = getDiscTextures(textureTypes.LIGHT);
+        var diffuseMap = getDiscTextures(textureTypes.DIFFUSE);
+        var metalnessMap = getDiscTextures(textureTypes.LIGHT);
+        geometry = new THREE.CircleGeometry(45, 128);
+        material = new THREE.MeshStandardMaterial({
+            color: 0x2f2d2b,
+            map: diffuseMap,
+            bumpMap: bumpMap,
+            bumpScale: 0.03,
+            lightMapIntensity: 4,
+            // envMap: TextureCube,
+            // envMapIntensity: 1,
+            roughness: 1.0, //0.02,
+            roughnessMap: roughnessMap,
+            // roughnessMap: metalnessMap,
+            metalness: 1.0,
+            metalnessMap: metalnessMap,
+            // opacity: 1,
+            // transparent: false,
+            // side: THREE.DoubleSide
+        });
+        // material = new THREE.MeshNormalMaterial({ side: THREE.DoubleSide });
+        disc = new THREE.Mesh(geometry, material);
+        disc.position.set(0, 0.1, 0);
+        disc.rotation.set(-Math.PI / 2, 0, 0);
+        disc.receiveShadow = false;
+        disc.castShadow = true;
+        diffuseMap = new THREE.TextureLoader().load('img/disc.jpg');
+        geometry = new THREE.CircleGeometry(12, 128);
+        material = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            map: diffuseMap,
+            roughness: 1.0,
+            metalness: 0.0,
+        });
+        var cover = new THREE.Mesh(geometry, material);
+        cover.position.set(0, 0, 1);
+        disc.add(cover);
+        scene.add(disc);
 
         // renderer
         renderer = new THREE.WebGLRenderer({
@@ -175,6 +236,72 @@
                 },
             });
         });
+    }
+
+    function getDiscTextures(type) {
+        var size = 2048,
+            w = size,
+            h = size;
+        var canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        var x = w / 2;
+        var y = h / 2;
+        var from, to;
+
+        function ring(radius, fill, stroke, lineWidth) {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+            if (fill) {
+                ctx.fillStyle = fill;
+                ctx.fill();
+            }
+            if (stroke) {
+                ctx.lineWidth = lineWidth;
+                ctx.strokeStyle = stroke;
+                ctx.stroke();
+            }
+            ctx.closePath();
+        }
+        if (type === textureTypes.DIFFUSE) {
+            to = size / 2 * 0.3;
+            ctx.fillStyle = '#2f2d2b';
+            ctx.rect(0, 0, w, h);
+            ctx.fill();
+            ring(to, '#332d2a');
+        }
+        if (type === textureTypes.METAL) {
+            to = size / 2 * 0.3;
+            ctx.fillStyle = '#000000';
+            ctx.rect(0, 0, w, h);
+            ctx.fill();
+            ring(to, '#f0f0f0');
+        }
+        if (type === textureTypes.LIGHT) {
+            from = size / 2 * 0.3;
+            to = size / 2 * 0.99;
+            ctx.fillStyle = '#000000';
+            ctx.rect(0, 0, w, h);
+            ctx.fill();
+            for (var i = from; i < to; i += 10 + Math.random() * 30) {
+                ring(i + Math.random() * 0.2, null, 'rgba(255, 255, 255, ' + Math.random() * 0.5 + ')', 10 + Math.random() * 40);
+            }
+        }
+        if (type === textureTypes.BUMP) {
+            from = size / 2 * 0.3;
+            to = size / 2 * 0.99;
+            ctx.fillStyle = '#000000';
+            ctx.rect(0, 0, w, h);
+            ctx.fill();
+            for (var i = from; i < to; i += 2) {
+                ring(i + Math.random() * 0.2, null, 'rgba(255, 255, 255, ' + Math.random() * 0.5 + ')', 0.6);
+            }
+        }
+        // document.body.appendChild(canvas);
+        var texture = new THREE.CanvasTexture(canvas); //, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping, THREE.LinearFilter, THREE.LinearMipMapLinearFilter, THREE.RGBAFormat, THREE.RGBAFormat, 1);
+        // THREE.ClampToEdgeWrapping
+        return texture;
     }
 
     function getCamera() {
@@ -238,6 +365,7 @@
         requestAnimationFrame(animate);
         // connector.rotation.x += 0.03 * song.speed;
         connector.rotation.y += 0.06 * song.speed;
+        disc.rotation.z += 0.06 * song.speed;
         light.position.x += (emitter.position.x * -1 - light.position.x) / 20;
         light.position.z += (emitter.position.z * -1 - light.position.z) / 20;
         // collisions();
