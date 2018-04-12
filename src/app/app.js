@@ -387,6 +387,7 @@
         // connector.rotation.x += 0.03 * song.speed;
         connector.rotation.y += speed33 * song.speed;
         disc.rotation.z += speed33 * song.speed;
+        emitter.rotation.y += speed33 * song.speed;
         light.position.x += (emitter.position.x * -1 - light.position.x) / 20;
         light.position.z += (emitter.position.z * -1 - light.position.z) / 20;
         // collisions();
