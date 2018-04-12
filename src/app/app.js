@@ -105,13 +105,6 @@
         geometry = new THREE.SphereGeometry(1, 64, 64);
         // material = new THREE.MeshNormalMaterial();
         material = new THREE.MeshStandardMaterial({
-            color: 0x938e8c,
-            roughness: 0.6,
-            metalness: 0.1,
-            opacity: 1.0,
-            transparent: false,
-        });
-        material = new THREE.MeshStandardMaterial({
             color: 0x666666,
             roughness: 0.2,
             metalness: 0.95,
@@ -127,7 +120,6 @@
 
         // emitter
         geometry = new THREE.BoxGeometry(3, 3, 3);
-        // material = new THREE.MeshNormalMaterial();
         material = new THREE.MeshStandardMaterial({
             color: 0xffffff,
             roughness: 0.6,
@@ -135,24 +127,36 @@
             opacity: 1,
             transparent: false,
         });
+        /*
+        geometry = new THREE.SphereGeometry(2, 64, 64);
+        material = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            roughness: 0.3,
+            metalness: 0.5,
+            envMap: envMap,
+            envMapIntensity: 1,
+        });
+        */
         emitter = new THREE.Mesh(geometry, material);
         emitter.position.set(-35, 1.5, 35);
         emitter.receiveShadow = false;
         emitter.castShadow = true;
         // ring
-        geometry = new THREE.RingGeometry(3, 3.2, 32, 1);
-        material = new THREE.MeshStandardMaterial({
-            color: 0x3f3b38,
-            roughness: 0.9,
-            metalness: 0.1,
-            opacity: 0.0,
-            transparent: true,
-        });
-        ring = new THREE.Mesh(geometry, material);
-        ring.rotation.set(-Math.PI / 2, 0, 0);
-        ring.receiveShadow = false;
-        ring.castShadow = false;
-        emitter.add(ring);
+        if (false) {
+            geometry = new THREE.RingGeometry(3, 3.3, 32, 1);
+            material = new THREE.MeshStandardMaterial({
+                color: 0x3f3b38,
+                roughness: 0.9,
+                metalness: 0.1,
+                opacity: 0.0,
+                transparent: true,
+            });
+            ring = new THREE.Mesh(geometry, material);
+            ring.rotation.set(-Math.PI / 2, 0, 0);
+            ring.receiveShadow = false;
+            ring.castShadow = false;
+            emitter.add(ring);
+        }
         //
         scene.add(emitter);
         hittables.push(emitter);
@@ -298,7 +302,7 @@
         var from = size / 2 * 0.3,
             to = size / 2 * 0.99;;
 
-        function ring(radius, fill, stroke, lineWidth) {
+        function circle(radius, fill, stroke, lineWidth) {
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
             if (fill) {
@@ -316,20 +320,20 @@
             ctx.fillStyle = '#2f2d2b';
             ctx.rect(0, 0, w, h);
             ctx.fill();
-            ring(from, '#332d2a');
+            circle(from, '#332d2a');
         }
         if (type === textureTypes.METAL) {
             ctx.fillStyle = '#000000';
             ctx.rect(0, 0, w, h);
             ctx.fill();
-            ring(from, '#f0f0f0');
+            circle(from, '#f0f0f0');
         }
         if (type === textureTypes.LIGHT) {
             ctx.fillStyle = '#000000';
             ctx.rect(0, 0, w, h);
             ctx.fill();
             for (var i = from; i < to; i += 10 + Math.random() * 30) {
-                ring(i + Math.random() * 0.2, null, 'rgba(255, 255, 255, ' + Math.random() * 0.5 + ')', 10 + Math.random() * 40);
+                circle(i + Math.random() * 0.2, null, 'rgba(255, 255, 255, ' + Math.random() * 0.5 + ')', 10 + Math.random() * 40);
             }
         }
         if (type === textureTypes.BUMP) {
@@ -337,7 +341,7 @@
             ctx.rect(0, 0, w, h);
             ctx.fill();
             for (var i = from; i < to; i += 2) {
-                ring(i + Math.random() * 0.2, null, 'rgba(255, 255, 255, ' + Math.random() * 0.5 + ')', 0.6);
+                circle(i + Math.random() * 0.2, null, 'rgba(255, 255, 255, ' + Math.random() * 0.5 + ')', 0.6);
             }
         }
         // document.body.appendChild(canvas);
@@ -421,9 +425,11 @@
         connector.rotation.y += speed33 * song.speed;
         disc.rotation.z += speed33 * song.speed;
         emitter.rotation.y += speed33 * song.speed;
-        var s = Math.abs(Math.sin(time * 0.001));
-        ring.material.opacity = s;
-        ring.scale.set(1 + s * 0.5, 1 + s * 0.5, 1 + s * 0.5);
+        if (ring) {
+            var s = Math.abs(Math.sin(time * 0.001)) * (1 - song.speed);
+            ring.material.opacity = s;
+            ring.scale.set(1 + s * 0.5, 1 + s * 0.5, 1 + s * 0.5);
+        }
         cover.position.x = -25 - 90 * song.speed;
         light.position.x += (emitter.position.x * -1 - light.position.x) / 20;
         light.position.z += (emitter.position.z * -1 - light.position.z) / 20;
