@@ -97,7 +97,7 @@
         scene.add(plane);
 
         // connector
-        envMap = new THREE.TextureLoader().load('img/envMap-sm.jpg');
+        envMap = new THREE.TextureLoader().load('img/envmap-sm.jpg');
         envMap.mapping = THREE.EquirectangularReflectionMapping;
         envMap.magFilter = THREE.LinearFilter;
         envMap.minFilter = THREE.LinearMipMapLinearFilter;
