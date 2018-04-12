@@ -1,1 +1,1 @@
-body,html{padding:0;margin:0;overflow:hidden}.section{min-height:100vh}.section-scene{background:#fff;overflow:hidden}
+.section-scene,body,html{overflow:hidden}body,html{padding:0;margin:0;background:#232221;color:#fff}.section{min-height:100vh}

@@ -5,6 +5,7 @@
         "bower_components/three.js/build/three.js",
         "bower_components/three.js/examples/js/controls/OrbitControls.js",
         "bower_components/three.js/examples/js/controls/DragControls.js",
+        "bower_components/three.js/examples/js/Detector.js",
         "src/vendors/tone.js"
     ],
     "outputFileName": "docs/js/vendors.js",

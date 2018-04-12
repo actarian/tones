@@ -21,11 +21,12 @@ html,
 body {
   padding: 0;
   margin: 0;
-  overflow: hidden; }
+  overflow: hidden;
+  background: #232221;
+  color: #ffffff; }
 
 .section {
   min-height: 100vh; }
 
 .section-scene {
-  background: white;
   overflow: hidden; }
