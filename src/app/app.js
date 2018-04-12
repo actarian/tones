@@ -35,7 +35,7 @@
     var camera, perspectivecamera, orthocamera, scene, renderer, orbit, drag;
     var light;
     var geometry, material, mesh;
-    var plane, connector, emitter, cover, disc, label;
+    var plane, connector, emitter, ring, cover, disc, label;
 
     var envMap, bumpMap, diffuseMap, roughnessMap, metalnessMap;
 
@@ -139,6 +139,21 @@
         emitter.position.set(-35, 1.5, 35);
         emitter.receiveShadow = false;
         emitter.castShadow = true;
+        // ring
+        geometry = new THREE.RingGeometry(3, 3.2, 32, 1);
+        material = new THREE.MeshStandardMaterial({
+            color: 0x3f3b38,
+            roughness: 0.9,
+            metalness: 0.1,
+            opacity: 0.0,
+            transparent: true,
+        });
+        ring = new THREE.Mesh(geometry, material);
+        ring.rotation.set(-Math.PI / 2, 0, 0);
+        ring.receiveShadow = false;
+        ring.castShadow = false;
+        emitter.add(ring);
+        //
         scene.add(emitter);
         hittables.push(emitter);
 
@@ -188,9 +203,10 @@
         scene.add(disc);
 
         // cover
+        diffuseMap = new THREE.TextureLoader().load('img/cover.jpg');
         geometry = new THREE.PlaneGeometry(90, 90, 32, 32);
         material = new THREE.MeshStandardMaterial({
-            color: 0x3f3b38,
+            color: 0xefebe8,
             map: diffuseMap,
             roughness: 0.6,
             metalness: 0.1,
@@ -397,7 +413,7 @@
         return fps;
     }
 
-    function animate() {
+    function animate(time) {
         requestAnimationFrame(animate);
         var fps = getFps() || 60;
         var speed33 = 0.0575959 * 60 / fps;
@@ -405,6 +421,9 @@
         connector.rotation.y += speed33 * song.speed;
         disc.rotation.z += speed33 * song.speed;
         emitter.rotation.y += speed33 * song.speed;
+        var s = Math.abs(Math.sin(time * 0.001));
+        ring.material.opacity = s;
+        ring.scale.set(1 + s * 0.5, 1 + s * 0.5, 1 + s * 0.5);
         cover.position.x = -25 - 90 * song.speed;
         light.position.x += (emitter.position.x * -1 - light.position.x) / 20;
         light.position.z += (emitter.position.z * -1 - light.position.z) / 20;
