@@ -17,12 +17,17 @@
         METAL: 4,
     };
 
+    var performance = (window.performance || Date);
+    var ticks = [],
+        fps;
+
     var volume = new Tone.Volume(-100);
 
     var synth;
     // synth = getSynth(volume);
 
-    var song = getSong();
+    // var song = getSong();
+    var song = getMp3();
 
     var connectors = [];
     var hittables = [];
@@ -30,7 +35,9 @@
     var camera, perspectivecamera, orthocamera, scene, renderer, orbit, drag;
     var light;
     var geometry, material, mesh;
-    var plane, connector, emitter, disc;
+    var plane, connector, emitter, cover, disc, label;
+
+    var envMap, bumpMap, diffuseMap, roughnessMap, metalnessMap;
 
     // soft shadow maps         
     if (USE_PCSS_SHADOWS) {
@@ -59,7 +66,7 @@
         // light = new THREE.PointLight(0xfefefe, 2, 100, 2);
         light = new THREE.SpotLight(0xfefefe, 1, 1000, 1, 1, 0.1);
         // light = new THREE.DirectionalLight(0xdfebff, 1.75);
-        light.position.set(50, 50, 50);
+        light.position.set(35, 50, -35);
         light.castShadow = true;
         light.shadow.mapSize.width = 2048;
         light.shadow.mapSize.height = 2048;
@@ -84,18 +91,18 @@
         });
         */
         plane = new THREE.Mesh(geometry, material);
-        plane.rotation.x = -Math.PI / 2;
-        plane.position.set(0, 0, 0);
+        plane.rotation.set(-Math.PI / 2, 0, 0);
+        plane.position.set(0, 0, -1);
         plane.receiveShadow = true;
         scene.add(plane);
 
         // connector
-        var envmap = new THREE.TextureLoader().load('img/envmap.jpg');
-        envmap.mapping = THREE.EquirectangularReflectionMapping;
-        envmap.magFilter = THREE.LinearFilter;
-        envmap.minFilter = THREE.LinearMipMapLinearFilter;
+        envMap = new THREE.TextureLoader().load('img/envMap-sm.jpg');
+        envMap.mapping = THREE.EquirectangularReflectionMapping;
+        envMap.magFilter = THREE.LinearFilter;
+        envMap.minFilter = THREE.LinearMipMapLinearFilter;
         // geometry = new THREE.BoxGeometry(10, 10, 10);
-        geometry = new THREE.SphereGeometry(2, 64, 64);
+        geometry = new THREE.SphereGeometry(1, 64, 64);
         // material = new THREE.MeshNormalMaterial();
         material = new THREE.MeshStandardMaterial({
             color: 0x938e8c,
@@ -108,11 +115,11 @@
             color: 0x666666,
             roughness: 0.2,
             metalness: 0.95,
-            envMap: envmap,
+            envMap: envMap,
             envMapIntensity: 1,
         });
         connector = new THREE.Mesh(geometry, material);
-        connector.position.set(0, 2, 0);
+        connector.position.set(0, 1, 0);
         connector.receiveShadow = false;
         connector.castShadow = true;
         scene.add(connector);
@@ -129,25 +136,25 @@
             transparent: false,
         });
         emitter = new THREE.Mesh(geometry, material);
-        emitter.position.set(0, 1.5, -20);
+        emitter.position.set(-35, 1.5, 35);
         emitter.receiveShadow = false;
         emitter.castShadow = true;
         scene.add(emitter);
         hittables.push(emitter);
 
         // disc
-        var bumpMap = getDiscTextures(textureTypes.BUMP);
-        var roughnessMap = getDiscTextures(textureTypes.LIGHT);
-        var diffuseMap = getDiscTextures(textureTypes.DIFFUSE);
-        var metalnessMap = getDiscTextures(textureTypes.LIGHT);
-        geometry = new THREE.CircleGeometry(45, 128);
+        bumpMap = getDiscTextures(textureTypes.BUMP);
+        roughnessMap = getDiscTextures(textureTypes.LIGHT, 512);
+        diffuseMap = getDiscTextures(textureTypes.DIFFUSE, 512);
+        metalnessMap = getDiscTextures(textureTypes.LIGHT, 512);
+        geometry = new THREE.RingGeometry(12.1, 45, 64, 4);
+        // geometry = new THREE.CircleGeometry(45, 128);
         material = new THREE.MeshStandardMaterial({
             color: 0x2f2d2b,
             map: diffuseMap,
             bumpMap: bumpMap,
-            bumpScale: 0.03,
-            lightMapIntensity: 4,
-            // envMap: TextureCube,
+            bumpScale: 0.02,
+            envMap: envMap,
             // envMapIntensity: 1,
             roughness: 1.0, //0.02,
             roughnessMap: roughnessMap,
@@ -162,19 +169,22 @@
         disc = new THREE.Mesh(geometry, material);
         disc.position.set(0, 0.1, 0);
         disc.rotation.set(-Math.PI / 2, 0, 0);
-        disc.receiveShadow = false;
+        disc.receiveShadow = true;
         disc.castShadow = true;
         diffuseMap = new THREE.TextureLoader().load('img/disc.jpg');
-        geometry = new THREE.CircleGeometry(12, 128);
+        geometry = new THREE.RingGeometry(1.3, 12, 64, 4);
+        // geometry = new THREE.CircleGeometry(12, 128);
         material = new THREE.MeshStandardMaterial({
             color: 0xffffff,
             map: diffuseMap,
-            roughness: 1.0,
-            metalness: 0.0,
+            roughness: 0.6,
+            metalness: 0.4,
         });
-        var cover = new THREE.Mesh(geometry, material);
-        cover.position.set(0, 0, 1);
-        disc.add(cover);
+        label = new THREE.Mesh(geometry, material);
+        label.position.set(0, 0, 0);
+        label.receiveShadow = true;
+        label.castShadow = true;
+        disc.add(label);
         scene.add(disc);
 
         // renderer
@@ -212,35 +222,39 @@
             var b = connector.position.clone();
             var d = a.sub(b);
             song.theremin.drag(d);
-            TweenLite.to(song, 0.5, {
-                speed: 1,
-                ease: Power2.easeOut,
-                onUpdate: function () {
-                    song.setSpeed(song.speed);
-                },
-            });
+            if (song.speed === 0) {
+                TweenLite.to(song, 0.5, {
+                    speed: 1,
+                    ease: Power2.easeOut,
+                    onUpdate: function () {
+                        song.setSpeed(song.speed);
+                    },
+                });
+            }
         });
         drag.addEventListener('dragend', function (e) {
             if (orbit) {
                 orbit.enabled = true;
             }
-            TweenLite.to(song, 0.5, {
-                speed: 0,
-                ease: Power2.easeOut,
-                onUpdate: function () {
-                    song.setSpeed(song.speed);
-                },
-                onComplete: function () {
-                    song.theremin.stop();
-                    song.stop();
-                },
-            });
+            if (song.speed !== 0) {
+                TweenLite.to(song, 0.5, {
+                    speed: 0,
+                    ease: Power2.easeOut,
+                    onUpdate: function () {
+                        song.setSpeed(song.speed);
+                    },
+                    onComplete: function () {
+                        song.theremin.stop();
+                        song.stop();
+                    },
+                });
+            }
         });
     }
 
-    function getDiscTextures(type) {
-        var size = 2048,
-            w = size,
+    function getDiscTextures(type, size) {
+        size = size || 2048;
+        var w = size,
             h = size;
         var canvas = document.createElement('canvas');
         canvas.width = w;
@@ -248,7 +262,8 @@
         var ctx = canvas.getContext('2d');
         var x = w / 2;
         var y = h / 2;
-        var from, to;
+        var from = size / 2 * 0.3,
+            to = size / 2 * 0.99;;
 
         function ring(radius, fill, stroke, lineWidth) {
             ctx.beginPath();
@@ -265,22 +280,18 @@
             ctx.closePath();
         }
         if (type === textureTypes.DIFFUSE) {
-            to = size / 2 * 0.3;
             ctx.fillStyle = '#2f2d2b';
             ctx.rect(0, 0, w, h);
             ctx.fill();
-            ring(to, '#332d2a');
+            ring(from, '#332d2a');
         }
         if (type === textureTypes.METAL) {
-            to = size / 2 * 0.3;
             ctx.fillStyle = '#000000';
             ctx.rect(0, 0, w, h);
             ctx.fill();
-            ring(to, '#f0f0f0');
+            ring(from, '#f0f0f0');
         }
         if (type === textureTypes.LIGHT) {
-            from = size / 2 * 0.3;
-            to = size / 2 * 0.99;
             ctx.fillStyle = '#000000';
             ctx.rect(0, 0, w, h);
             ctx.fill();
@@ -289,8 +300,6 @@
             }
         }
         if (type === textureTypes.BUMP) {
-            from = size / 2 * 0.3;
-            to = size / 2 * 0.99;
             ctx.fillStyle = '#000000';
             ctx.rect(0, 0, w, h);
             ctx.fill();
@@ -361,11 +370,23 @@
         });
     }
 
+    function getFps() {
+        var now = performance.now();
+        while (ticks.length > 0 && ticks[0] <= now - 1000) {
+            ticks.shift();
+        }
+        ticks.push(now);
+        fps = ticks.length;
+        return fps;
+    }
+
     function animate() {
         requestAnimationFrame(animate);
+        var fps = getFps() || 60;
+        var speed33 = 0.0575959 * 60 / fps;
         // connector.rotation.x += 0.03 * song.speed;
-        connector.rotation.y += 0.06 * song.speed;
-        disc.rotation.z += 0.06 * song.speed;
+        connector.rotation.y += speed33 * song.speed;
+        disc.rotation.z += speed33 * song.speed;
         light.position.x += (emitter.position.x * -1 - light.position.x) / 20;
         light.position.z += (emitter.position.z * -1 - light.position.z) / 20;
         // collisions();
@@ -436,6 +457,141 @@
         //play a middle 'C' for the duration of an 8th note
         // synth.triggerAttackRelease('C4', '8n');
         return synth;
+    }
+
+    function getMp3() {
+
+        // FILTER
+        var filter = new Tone.Filter({
+            type: 'lowpass',
+            frequency: 350,
+            rolloff: -12,
+            Q: 1,
+            gain: 0
+        }).toMaster();
+
+        var player = new Tone.Player({
+            url: "audio/The-Blinding-Shiver-128.[mp3|ogg]",
+            loop: true,
+            playbackRate: 0.1,
+        }).toMaster().sync().start('0');
+
+        Tone.Transport.timeSignature = 4;
+        Tone.Transport.bpm.value = 98;
+        Tone.Transport.loop = true;
+        Tone.Transport.loopStart = '0';
+        Tone.Transport.loopEnd = '98:5';
+
+        // SYNTH
+        var synth = new Tone.DuoSynth({
+            vibratoAmount: 0.5,
+            vibratoRate: 5,
+            portamento: 0.1,
+            harmonicity: 1.005,
+            volume: 1,
+            voice0: {
+                volume: -2,
+                oscillator: {
+                    type: 'sawtooth'
+                },
+                filter: {
+                    Q: 1,
+                    type: 'lowpass',
+                    rolloff: -24
+                },
+                envelope: {
+                    attack: 0.01,
+                    decay: 0.25,
+                    sustain: 0.4,
+                    release: 1.2
+                },
+                filterEnvelope: {
+                    attack: 0.001,
+                    decay: 0.05,
+                    sustain: 0.3,
+                    release: 2,
+                    baseFrequency: 100,
+                    octaves: 4
+                }
+            },
+            voice1: {
+                volume: -10,
+                oscillator: {
+                    type: 'sawtooth'
+                },
+                filter: {
+                    Q: 2,
+                    type: 'bandpass',
+                    rolloff: -12
+                },
+                envelope: {
+                    attack: 0.25,
+                    decay: 4,
+                    sustain: 0.1,
+                    release: 0.8
+                },
+                filterEnvelope: {
+                    attack: 0.05,
+                    decay: 0.05,
+                    sustain: 0.7,
+                    release: 2,
+                    baseFrequency: 5000,
+                    octaves: -1.5
+                }
+            }
+        }).toMaster();
+        synth.notes = ['C2', 'E2', 'G2', 'A2', 'C3', 'D3', 'E3', 'G3', 'A3', 'B3', 'C4', 'D4', 'E4', 'G4', 'A4', 'B4', 'C5'];
+        synth.note = synth.notes[0];
+
+        var song = {
+            effects: {
+                filter: filter,
+            },
+            instruments: {
+                player: player,
+                synth: synth,
+            },
+            start: function () {
+                Tone.Transport.start("+0.1");
+            },
+            stop: function () {
+                Tone.Transport.pause();
+            },
+            theremin: {
+                drag: function (d) {
+                    d = d.divideScalar(10);
+                    var x = Math.abs(d.x);
+                    var y = Math.abs(d.z);
+                    x = Math.max(0, Math.min(1, x));
+                    y = Math.max(0, Math.min(1, y));
+                    var i = Math.max(0, Math.min(synth.notes.length - 1, Math.round(y * synth.notes.length - 1)));
+                    var note = synth.notes[synth.notes.length - 1 - i];
+                    if (synth.note !== note) {
+                        synth.note = note;
+                        synth.setNote(note);
+                    }
+                    synth.vibratoAmount.value = x * 10;
+                    if (song.speed === 1) {
+                        filter.set('detune', -10000 + (20000 * x));
+                    }
+                    // console.log(song.speed);
+                },
+                start: function () {
+                    synth.triggerAttack(synth.note);
+                },
+                stop: function () {
+                    synth.triggerRelease();
+                },
+            },
+            speed: 0,
+            setSpeed: function (x) {
+                x = Math.max(0, Math.min(1, x));
+                player.set('playbackRate', 0.1 + 0.99 * x);
+                filter.set('detune', -10000 + (10000 * x));
+            },
+        };
+        return song;
+
     }
 
     function getSong() {
