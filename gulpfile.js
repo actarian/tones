@@ -38,19 +38,23 @@ gulp.task('compile:sass', function () {
 gulp.task('compile', ['compile:sass']);
 
 // BUNDLE
+
+function doCssBundle(glob, bundle) {
+	return glob
+		.pipe(plumber())
+		.pipe(concat(bundle.outputFileName))
+		.pipe(gulp.dest('.'))
+		.pipe(gulpif(bundle.minify && bundle.minify.enabled, cssmin()))
+		.pipe(rename({
+			extname: '.min.css'
+		}))
+		.pipe(gulp.dest('.'));
+}
 gulp.task('bundle:css', function () {
 	var tasks = getBundles('.css').map(function (bundle) {
-		return gulp.src(bundle.inputFiles, {
-				base: '.'
-			})
-			.pipe(plumber())
-			.pipe(concat(bundle.outputFileName))
-			.pipe(gulp.dest('.'))
-			.pipe(gulpif(bundle.minify && bundle.minify.enabled, cssmin()))
-			.pipe(rename({
-				extname: '.min.css'
-			}))
-			.pipe(gulp.dest('.'));
+		return doCssBundle(gulp.src(bundle.inputFiles, {
+			base: '.'
+		}), bundle);
 	});
 	return merge(tasks);
 });
@@ -173,7 +177,11 @@ gulp.task('watch', function (done) {
 	});
 	*/
 	getBundles('.css').forEach(function (bundle) {
-		gulp.watch(bundle.inputFiles, ['bundle:css']).on('change', log);
+		gulp.watch(bundle.inputFiles, function () {
+			return doCssBundle(gulp.src(bundle.inputFiles, {
+				base: '.'
+			}), bundle);
+		}).on('change', log);
 	});
 	getBundles('.js').forEach(function (bundle) {
 		gulp.watch(bundle.inputFiles, function () {

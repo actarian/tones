@@ -25,7 +25,8 @@ void initPoissonSamples (const in vec2 randomSeed) {
     }
 }
 
-float penumbraSize (const in float zReceiver, const in float zBlocker) { // Parallel plane estimation
+float penumbraSize (const in float zReceiver, const in float zBlocker) { 
+    // Parallel plane estimation
     return (zReceiver - zBlocker) / zBlocker;
 }
 
@@ -66,9 +67,10 @@ float PCF_Filter (sampler2D shadowMap, vec2 uv, float zReceiver, float filterRad
 }
 
 float PCSS (sampler2D shadowMap, vec4 coords) {
+    // Assumed to be eye-space z in this code
     vec2 uv = coords.xy;
-    float zReceiver = coords.z; // Assumed to be eye-space z in this code
-
+    float zReceiver = coords.z; 
+    
     initPoissonSamples(uv);
     // STEP 1: blocker search
     float avgBlockerDepth = findBlocker(shadowMap, uv, zReceiver);

@@ -8,6 +8,8 @@
         return;
     }
 
+    var USE_PCSS_SHADOWS = false;
+
     var volume = new Tone.Volume(-100);
 
     var synth;
@@ -24,7 +26,7 @@
     var plane, connector, emitter;
 
     // soft shadow maps         
-    if (true) {
+    if (USE_PCSS_SHADOWS) {
         getSoftShadowMaps(function () {
             init();
             animate();
@@ -47,18 +49,21 @@
         // camera = orthocamera = getOrthoCamera();
 
         // light
-        light = new THREE.PointLight(0xffffff, 2, 30);
+        // light = new THREE.PointLight(0xfefefe, 2, 100, 2);
+        light = new THREE.SpotLight(0xfefefe, 1, 1000, 1, 1, 2);
         // light = new THREE.DirectionalLight(0xdfebff, 1.75);
-        light.position.set(20, 60, 20);
+        light.position.set(50, 50, 50);
         light.castShadow = true;
         light.shadow.mapSize.width = 2048;
         light.shadow.mapSize.height = 2048;
         light.shadow.camera.near = 0.1;
         light.shadow.camera.far = 500;
+        // light.shadow.bias = 0.0001;
+        light.shadow.radius = 1.0001;
         scene.add(light);
 
         // plane
-        geometry = new THREE.PlaneGeometry(100, 100, 25, 25);
+        geometry = new THREE.PlaneGeometry(500, 500, 25, 25);
         material = new THREE.ShadowMaterial({
             opacity: 0.25,
             side: THREE.DoubleSide
@@ -84,13 +89,13 @@
             color: 0x938e8c,
             roughness: 0.6,
             metalness: 0.1,
-            opacity: 0.5,
-            transparent: true,
+            opacity: 1.0,
+            transparent: false,
         });
         connector = new THREE.Mesh(geometry, material);
         connector.position.set(0, 5, 0);
-        connector.castShadow = true; //default is false
-        connector.receiveShadow = false; //default
+        connector.receiveShadow = false;
+        connector.castShadow = true;
         scene.add(connector);
         connectors.push(connector);
 
@@ -106,8 +111,8 @@
         });
         emitter = new THREE.Mesh(geometry, material);
         emitter.position.set(0, 1.5, -20);
-        emitter.castShadow = true; //default is false
-        emitter.receiveShadow = false; //default
+        emitter.receiveShadow = false;
+        emitter.castShadow = true;
         scene.add(emitter);
         hittables.push(emitter);
 
@@ -121,7 +126,10 @@
         renderer.shadowMap.enabled = true;
         renderer.gammaInput = true;
         renderer.gammaOutput = true;
-        // renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap        
+        // renderer.shadowMap.type = THREE.BasicShadowMap; // 0
+        // renderer.shadowMap.type = THREE.PCFShadowMap; // 1
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap; // 2  
+
         document.querySelector('.section-scene').appendChild(renderer.domElement);
 
         // controls
