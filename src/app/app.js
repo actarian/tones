@@ -8,13 +8,15 @@
         return;
     }
 
+    var DEBUG = false;
     var USE_PCSS_SHADOWS = false;
+    var SHADOW_SIZE = 1024; // 2048;
+    var T = 0;
     var textureTypes = {
         DIFFUSE: 0,
         BUMP: 1,
         LIGHT: 2,
         ALPHA: 3,
-        METAL: 4,
     };
 
     var performance = (window.performance || Date);
@@ -68,8 +70,8 @@
         // light = new THREE.DirectionalLight(0xdfebff, 1.75);
         light.position.set(35, 50, -35);
         light.castShadow = true;
-        light.shadow.mapSize.width = 2048;
-        light.shadow.mapSize.height = 2048;
+        light.shadow.mapSize.width = SHADOW_SIZE;
+        light.shadow.mapSize.height = SHADOW_SIZE;
         light.shadow.camera.near = 0.1;
         light.shadow.camera.far = 500;
         // light.shadow.bias = 0.0001;
@@ -138,11 +140,12 @@
         });
         */
         emitter = new THREE.Mesh(geometry, material);
-        emitter.position.set(-35, 1.5, 35);
+        // emitter.position.set(-35, 1.5, 35);
+        emitter.position.set(55, 1.5, 0);
         emitter.receiveShadow = false;
         emitter.castShadow = true;
         // ring
-        if (false) {
+        if (true) {
             geometry = new THREE.RingGeometry(3, 3.3, 32, 1);
             material = new THREE.MeshStandardMaterial({
                 color: 0x3f3b38,
@@ -289,6 +292,65 @@
         });
     }
 
+    function animate(time) {
+        requestAnimationFrame(animate);
+        var fps = getFps() || 60;
+        var speed33 = 0.0575959 * 60 / fps;
+        if (ring) {
+            var s = Math.abs(Math.sin(time * 0.001)) * (1 - song.speed);
+            ring.material.opacity = s;
+            ring.scale.set(1 + s * 0.5, 1 + s * 0.5, 1 + s * 0.5);
+        }
+        cover.position.x = -25 - 90 * song.speed;
+        if (song.speed > 0) {
+            connector.rotation.y += speed33 * song.speed;
+            disc.rotation.z += speed33 * song.speed;
+            emitter.rotation.y += speed33 * song.speed;
+            light.position.x += (emitter.position.x * -1 - light.position.x) / 20;
+            light.position.z += (emitter.position.z * -1 - light.position.z) / 20;
+        } else {
+            emitter.position.x += (55 - emitter.position.x) / 20;
+            emitter.position.z += (0 - emitter.position.z) / 20;
+            var nry = Math.round(emitter.rotation.y / Math.PI * 2) * Math.PI / 2;
+            emitter.rotation.y += (nry - emitter.rotation.y) / 20;
+        }
+        // collisions();
+        renderer.render(scene, camera);
+    }
+
+    function collisions() {
+        connectors.filter(function (c, i) {
+            c.on = false;
+            var origin = c.position.clone();
+            for (var v = 0; v < c.geometry.vertices.length; v++) {
+                var local = c.geometry.vertices[v].clone();
+                var global = local.applyMatrix4(c.matrix);
+                var direction = global.sub(c.position);
+                var ray = new THREE.Raycaster(origin, direction.clone().normalize());
+                var results = ray.intersectObjects(hittables);
+                if (results.length > 0 && results[0].distance < direction.length()) {
+                    c.volume = results[0].object.position.distanceTo(origin) / direction.length();
+                    c.on = true;
+                }
+            }
+            if (c.on) {
+                volume.set('volume', -100 + 100 * c.volume);
+                if (synth) {
+                    synth.triggerAttack('C4');
+                }
+            } else {
+                if (synth) {
+                    synth.triggerRelease();
+                }
+            }
+        });
+    }
+
+    function resize() {
+        camera.resize();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
     function getDiscTextures(type, size) {
         size = size || 2048;
         var w = size,
@@ -300,7 +362,8 @@
         var x = w / 2;
         var y = h / 2;
         var from = size / 2 * 0.3,
-            to = size / 2 * 0.99;;
+            to = size / 2 * 0.98,
+            i;
 
         function circle(radius, fill, stroke, lineWidth) {
             ctx.beginPath();
@@ -322,31 +385,32 @@
             ctx.fill();
             circle(from, '#332d2a');
         }
-        if (type === textureTypes.METAL) {
-            ctx.fillStyle = '#000000';
-            ctx.rect(0, 0, w, h);
-            ctx.fill();
-            circle(from, '#f0f0f0');
-        }
         if (type === textureTypes.LIGHT) {
             ctx.fillStyle = '#000000';
             ctx.rect(0, 0, w, h);
             ctx.fill();
-            for (var i = from; i < to; i += 10 + Math.random() * 30) {
-                circle(i + Math.random() * 0.2, null, 'rgba(255, 255, 255, ' + Math.random() * 0.5 + ')', 10 + Math.random() * 40);
+            for (i = from; i < to; i += 10 + Math.random() * 30) {
+                var r = i + Math.random() * 0.2;
+                var t = (20 + Math.random() * 30) / 2;
+                t = Math.min(t, to - r - 1) * 2;
+                circle(r, null, 'rgba(255, 255, 255, ' + Math.random() * 0.5 + ')', t);
             }
         }
         if (type === textureTypes.BUMP) {
             ctx.fillStyle = '#000000';
             ctx.rect(0, 0, w, h);
             ctx.fill();
-            for (var i = from; i < to; i += 2) {
+            for (i = from; i < to; i += 2) {
                 circle(i + Math.random() * 0.2, null, 'rgba(255, 255, 255, ' + Math.random() * 0.5 + ')', 0.6);
             }
         }
-        // document.body.appendChild(canvas);
-        var texture = new THREE.CanvasTexture(canvas); //, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping, THREE.LinearFilter, THREE.LinearMipMapLinearFilter, THREE.RGBAFormat, THREE.RGBAFormat, 1);
-        // THREE.ClampToEdgeWrapping
+        // THREE.ClampToEdgeWrapping - THREE.RepeatWrapping
+        var texture = new THREE.CanvasTexture(canvas, THREE.UVMapping, THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping, THREE.LinearFilter, THREE.LinearMipMapLinearFilter, THREE.RGBFormat, THREE.UnsignedByteType, 2);
+        if (DEBUG) {
+            canvas.setAttribute('style', 'top:' + (256 * T) + 'px;');
+            document.body.appendChild(canvas);
+        }
+        T++;
         return texture;
     }
 
@@ -415,59 +479,6 @@
         ticks.push(now);
         fps = ticks.length;
         return fps;
-    }
-
-    function animate(time) {
-        requestAnimationFrame(animate);
-        var fps = getFps() || 60;
-        var speed33 = 0.0575959 * 60 / fps;
-        // connector.rotation.x += 0.03 * song.speed;
-        connector.rotation.y += speed33 * song.speed;
-        disc.rotation.z += speed33 * song.speed;
-        emitter.rotation.y += speed33 * song.speed;
-        if (ring) {
-            var s = Math.abs(Math.sin(time * 0.001)) * (1 - song.speed);
-            ring.material.opacity = s;
-            ring.scale.set(1 + s * 0.5, 1 + s * 0.5, 1 + s * 0.5);
-        }
-        cover.position.x = -25 - 90 * song.speed;
-        light.position.x += (emitter.position.x * -1 - light.position.x) / 20;
-        light.position.z += (emitter.position.z * -1 - light.position.z) / 20;
-        // collisions();
-        renderer.render(scene, camera);
-    }
-
-    function resize() {
-        camera.resize();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    function collisions() {
-        connectors.filter(function (c, i) {
-            c.on = false;
-            var origin = c.position.clone();
-            for (var v = 0; v < c.geometry.vertices.length; v++) {
-                var local = c.geometry.vertices[v].clone();
-                var global = local.applyMatrix4(c.matrix);
-                var direction = global.sub(c.position);
-                var ray = new THREE.Raycaster(origin, direction.clone().normalize());
-                var results = ray.intersectObjects(hittables);
-                if (results.length > 0 && results[0].distance < direction.length()) {
-                    c.volume = results[0].object.position.distanceTo(origin) / direction.length();
-                    c.on = true;
-                }
-            }
-            if (c.on) {
-                volume.set('volume', -100 + 100 * c.volume);
-                if (synth) {
-                    synth.triggerAttack('C4');
-                }
-            } else {
-                if (synth) {
-                    synth.triggerRelease();
-                }
-            }
-        });
     }
 
     function getSynth(volume) {
