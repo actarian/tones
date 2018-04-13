@@ -6,6 +6,7 @@
         "bower_components/three.js/examples/js/controls/OrbitControls.js",
         "bower_components/three.js/examples/js/controls/DragControls.js",
         "bower_components/three.js/examples/js/Detector.js",
+        "bower_components/stats.js/build/stats.min.js",
         "src/vendors/tone.js"
     ],
     "outputFileName": "docs/js/vendors.js",
@@ -22,6 +23,7 @@
     }
 }, {
     "inputFiles": [
+        "src/app/components/song.js",
         "src/app/app.js"
     ],
     "outputFileName": "docs/js/app.js",

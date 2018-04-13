@@ -21,6 +21,7 @@
   "dependencies": {
     "greensock": "https://github.com/greensock/GreenSock-JS.git#1.20.4",
     "three.js": "https://github.com/mrdoob/three.js.git#r91",
+    "stats.js": "https://github.com/mrdoob/stats.js.git#r17",
     "tone": "r12"
   }
 }
