@@ -15,6 +15,12 @@
 
         function getMp3() {
 
+            Tone.Transport.timeSignature = 4;
+            Tone.Transport.bpm.value = 49; // 98;
+            Tone.Transport.loop = true;
+            Tone.Transport.loopStart = '0';
+            Tone.Transport.loopEnd = '192:0';
+
             // FILTER
             var filter = new Tone.Filter({
                 type: 'lowpass',
@@ -25,16 +31,10 @@
             }).toMaster();
 
             var player = new Tone.Player({
-                url: "audio/The-Blinding-Shiver-128.[mp3|ogg]",
+                url: "audio/The_Mistery_of_Form_128.[mp3|ogg]",
                 loop: true,
-                playbackRate: 0.1,
+                playbackRate: 1.0,
             }).toMaster().sync().start('0');
-
-            Tone.Transport.timeSignature = 4;
-            Tone.Transport.bpm.value = 98;
-            Tone.Transport.loop = true;
-            Tone.Transport.loopStart = '0';
-            Tone.Transport.loopEnd = '98:5';
 
             // SYNTH
             var synth = new Tone.DuoSynth({
@@ -125,9 +125,11 @@
                             synth.setNote(note);
                         }
                         synth.vibratoAmount.value = x * 10;
+                        /*
                         if (song.speed === 1) {
                             filter.set('detune', -10000 + (20000 * x));
                         }
+                        */
                         // console.log(song.speed);
                     },
                     start: function () {
@@ -140,8 +142,11 @@
                 speed: 0,
                 setSpeed: function (x) {
                     x = Math.max(0, Math.min(1, x));
-                    player.set('playbackRate', 0.1 + 0.99 * x);
-                    filter.set('detune', -10000 + (10000 * x));
+                    var playbackRate = Math.max(0, Math.min(1, 0.1 + (0.99 * x)));
+                    var detune = -10000 + (10000 * x);
+                    player.set('playbackRate', playbackRate);
+                    filter.set('detune', detune);
+                    // console.log('playbackRate', playbackRate, 'detune', detune);
                 },
             };
             return song;
@@ -440,7 +445,7 @@
                 speed: 0,
                 setSpeed: function (x) {
                     x = Math.max(0, Math.min(1, x));
-                    Tone.Transport.bpm.value = 1 + Math.round(x * 124);
+                    Tone.Transport.bpm.value = 1 + Math.round(x * 49);
                     filter.set('detune', -10000 + (10000 * x));
                 },
             };
