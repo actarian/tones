@@ -7,11 +7,9 @@
     "license": "UNLICENSED",
     "homepage": "https://github.com/actarian/tones/blob/master/README.md",
     "devDependencies": {
-        "@types/mocha": "^2.2.42",
-        "@types/node": "^7.0.43",
-        "uglify-js": "^3.3.16",
+        "uglify-js": "^3.3.21",
         "gulp": "^3.9.1",
-        "gulp-autoprefixer": "^4.1.0",
+        "gulp-autoprefixer": "^5.0.0",
         "gulp-coffee": "^3.0.2",
         "gulp-concat": "^2.6.1",
         "gulp-concat-util": "^0.5.5",
@@ -21,14 +19,12 @@
         "gulp-livereload": "^3.8.1",
         "gulp-plumber": "^1.2.0",
         "gulp-rename": "^1.2.2",
-        "gulp-sass": "^3.1.0",
+        "gulp-sass": "^4.0.1",
         "gulp-sourcemaps": "^2.6.4",
         "gulp-uglify": "^3.0.0",
         "gulp-watch": "^5.0.0",
         "gulp-webserver": "^0.9.1",
-        "merge-stream": "^1.0.1",
-        "typescript": "^2.6.1",
-        "vscode": "^1.1.6"
+        "merge-stream": "^1.0.1"
     },
     "repository": {
         "type": "git",

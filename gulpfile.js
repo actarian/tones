@@ -204,16 +204,34 @@ gulp.task('start', ['compile', 'bundle', 'watch']);
 // UTILS
 function getCompilers(ext) {
 	var data = getJson('./compilerconfig.json');
-	return data.filter(function (compile) {
-		return new RegExp(`${ext}$`).test(compile.inputFile);
-	});
+	if (data) {
+		return data.filter(function (compile) {
+			return new RegExp(`${ext}$`).test(compile.inputFile);
+		});
+	} else {
+		return [];
+	}
 }
 
 function getBundles(ext) {
 	var data = getJson('./bundleconfig.json');
-	return data.filter(function (bundle) {
-		return new RegExp(`${ext}$`).test(bundle.outputFileName);
-	});
+	if (data) {
+		return data.filter(function (bundle) {
+			return new RegExp(`${ext}$`).test(bundle.outputFileName);
+		});
+	} else {
+		return [];
+	}
+}
+
+function getJson(path) {
+	if (fs.existsSync(path)) {
+		var text = fs.readFileSync(path, 'utf8');
+		// console.log('getJson', path, text);
+		return JSON.parse(stripBom(text));
+	} else {
+		return null;
+	}
 }
 
 function stripBom(text) {
@@ -222,10 +240,4 @@ function stripBom(text) {
 		text = text.slice(1);
 	}
 	return text;
-}
-
-function getJson(path) {
-	var text = fs.readFileSync(path, 'utf8');
-	// console.log('getJson', path, text);
-	return JSON.parse(stripBom(text));
 }
